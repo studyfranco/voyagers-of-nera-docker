@@ -46,3 +46,6 @@ The server configuration is handled via environment variables in `docker-compose
 ## Troubleshooting
 
 If the server fails to start, check the logs for SteamCMD errors or missing dependencies. Ensure the mapped volume has correct permissions (runs as UID 1000).
+
+## Last Update
+2026-02-15
