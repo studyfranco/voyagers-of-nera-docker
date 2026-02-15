@@ -73,6 +73,4 @@ fi
 
 cd /config/gamefiles || exit 1
 
-bash
-
-#exec ./PalServer.sh -log -servername="${SERVER_NAME}" -ServerName="${SERVER_NAME}" -publicport=${SERVER_PORT} -Port="${SERVER_PORT}" -queryPort="${SERVER_QUERY_PORT}" -PublicPort=${SERVER_PORT} -RconPassword="${RCON_PASSWORD}" -RconPort=${RCON_PORT} -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS
+exec wine BoatGameServer.exe -log -servername="${SERVER_NAME}" -ServerName="${SERVER_NAME}" -publicport=${SERVER_PORT} -Port="${SERVER_PORT}" -queryPort="${SERVER_QUERY_PORT}" -PublicPort=${SERVER_PORT} -RconPassword="${RCON_PASSWORD}" -RconPort=${RCON_PORT} -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS
