@@ -1,0 +1,12 @@
+services:
+  voyagers-of-nera:
+    build: .
+    container_name: voyagers-of-nera
+    restart: unless-stopped
+    ports:
+      - "7777:7777/udp"
+    volumes:
+      - ./game:/home/steam/server
+    environment:
+      - SERVER_PORT=7777
+      - AUTO_UPDATE=true
