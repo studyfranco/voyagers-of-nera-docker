@@ -1,9 +1,7 @@
 <div align="center">
   
-![Github stars](<https://badgen.net/github/stars/studyfranco/voyagers-of-nera-docker>
-?icon=github&label=stars)
-![Github forks](<https://badgen.net/github/forks/studyfranco/voyagers-of-nera-docker>
-?icon=github&label=forks)
+![Github stars](https://badgen.net/github/stars/studyfranco/voyagers-of-nera-docker?icon=github&label=stars)
+![Github forks](https://badgen.net/github/forks/studyfranco/voyagers-of-nera-docker?icon=github&label=forks)
 ![Github issues](https://img.shields.io/github/issues/studyfranco/voyagers-of-nera-docker)
 ![Github last-commit](https://img.shields.io/github/last-commit/studyfranco/voyagers-of-nera-docker)
   
@@ -36,7 +34,7 @@ services:
   voyagers-of-nera:
     container_name: voyagers-of-nera
     hostname: voyagers-of-nera
-    image: ghcr.io/studyfranco/voyagers-of-nera:master
+    image: ghcr.io/studyfranco/voyagers-of-nera-docker:master
     #network_mode: "host"
     volumes:
       - "/path/to/config:/config"

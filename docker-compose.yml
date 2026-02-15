@@ -2,7 +2,7 @@ services:
   voyagers-of-nera:
     container_name: voyagers-of-nera
     hostname: voyagers-of-nera
-    image: ghcr.io/studyfranco/voyagers-of-nera:master
+    image: ghcr.io/studyfranco/voyagers-of-nera-docker:master
     #network_mode: "host"
     volumes:
       - "/path/to/config:/config"
