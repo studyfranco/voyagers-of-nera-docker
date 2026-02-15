@@ -1,37 +1,78 @@
 #!/bin/bash
+
 set -e
 
-# Run update if AUTO_UPDATE is true
-if [ "${AUTO_UPDATE}" = "true" ]; then
-    /init.sh
+set_ini_prop() {
+    sed "/\[$2\]/,/^\[/ s/$3\=.*/$3=$4/" -i "${GAMECONFIGDIR}/$1"
+}
+
+set_ini_val() {
+    sed "/\[$2\]/,/^\[/ s/((\"$3\",.*))/((\"$3\", $4))/" -i "/home/steam/$1"
+}
+
+NUMCHECK='^[0-9]+$'
+launchDate=`date +"%Y_%m_%d_%H_%M_%s"`
+
+if [ -f "${GAMECONFIGDIR}/PalWorldSettings.ini" ]; then
+    tar cf - "/config/saves" "/config/gameconfigs" | pigz -9 -p 12 - > "/config/backups/${launchDate}.tar.gz"
 fi
 
-cd /home/steam/server
+mkdir -p "${GAMEBASECONFIGDIR}"
 
-# Attempt to locate the server executable
-# Common pattern for UE5 Linux servers: [ProjectName]/Binaries/Linux/[ProjectName]Server-Linux-Shipping
-# We look for "BoatGame" as that is the internal project name
-SERVER_BIN=$(find . -name "BoatGameServer-Linux-Shipping" -type f -print -quit)
-
-if [ -z "$SERVER_BIN" ]; then
-    # Fallback search for any likely executable if specific one isn't found
-    SERVER_BIN=$(find . -type f -name "*Server-Linux-Shipping" -print -quit)
+if [ ! -L "${GAMECONFIGDIR}" ]; then
+    ln -sf "/config/gameconfigs" "${GAMECONFIGDIR}"
 fi
 
-if [ -z "$SERVER_BIN" ]; then
-    echo "Error: Server executable not found in /home/steam/server"
-    echo "Contents of server directory:"
-    ls -R
-    exit 1
+if [ ! -L "${GAMESAVESDIR}" ]; then
+    ln -sf "/config/saves" "${GAMESAVESDIR}"
 fi
 
-chmod +x "$SERVER_BIN"
+## Initialise and update files
+if ! [[ "${SKIPUPDATE,,}" == "true" ]]; then
 
-echo "--- Starting Voyagers of Nera Server ---"
-echo "Executable: $SERVER_BIN"
+    space=$(stat -f --format="%a*%S" .)
+    space=$((space/1024/1024/1024))
+    printf "Checking available space...%sGB detected\\n" "${space}"
 
-# Default arguments
-ARGS="-log -port=${SERVER_PORT:-7777}"
+    if [[ "$space" -lt 8 ]]; then
+        printf "You have less than 8GB (%sGB detected) of available space to download the game.\\nIf this is a fresh install, it will probably fail.\\n" "${space}"
+    fi
 
-# Append any custom arguments passed to the container
-exec "$SERVER_BIN" $ARGS "$@"
+    printf "Downloading the latest version of the game...\\n"
+
+    /home/steam/steamcmd/steamcmd.sh +force_install_dir /config/gamefiles +login anonymous +app_update "$STEAMAPPID" +quit
+else
+    printf "Skipping update as flag is set\\n"
+fi
+
+#if [ ! -f "${GAMECONFIGDIR}/PalWorldSettings.ini" ]; then
+#    cp "/config/gamefiles/DefaultPalWorldSettings.ini" "/config/gameconfigs/PalWorldSettings.ini"
+#    sed -i "s/AdminPassword=\"[^\"]*\"/AdminPassword=\"${SERVERADMINPASSWORD}\"/" "/config/gameconfigs/PalWorldSettings.ini"
+#    sed -i "s/ServerPassword=\"[^\"]*\"/ServerPassword=\"${SERVERPASSWORD}\"/" "/config/gameconfigs/PalWorldSettings.ini"
+#    sed -i "s/ServerName=\"[^\"]*\"/ServerName=\"${SERVER_NAME}\"/" "/config/gameconfigs/PalWorldSettings.ini"
+#fi
+
+if ! [[ "$MAXPLAYERS" =~ $NUMCHECK ]] ; then
+    printf "Invalid max players number given: %s\\n" "${MAXPLAYERS}"
+    MAXPLAYERS=32
+fi
+#sed -i "s/ServerPlayerMaxNum=[0-9]*/ServerPlayerMaxNum=${MAXPLAYERS}/" "/config/gameconfigs/PalWorldSettings.ini"
+
+if ! [[ "$SERVER_PORT" =~ $NUMCHECK ]] ; then
+    printf "Invalid max players number given: %s\\n" "${SERVER_PORT}"
+    SERVER_PORT=18211
+fi
+#sed -i "s/PublicPort=[0-9]*/PublicPort=${SERVER_PORT}/" "/config/gameconfigs/PalWorldSettings.ini"
+
+if ! [[ "$SERVER_QUERY_PORT" =~ $NUMCHECK ]] ; then
+    printf "Invalid max players number given: %s\\n" "${SERVER_QUERY_PORT}"
+    SERVER_QUERY_PORT=27015
+fi
+
+#bEnablePlayerToPlayerDamage=False,bEnableFriendlyFire=False
+
+cd /config/gamefiles || exit 1
+
+bash
+
+#exec ./PalServer.sh -log -servername="${SERVER_NAME}" -ServerName="${SERVER_NAME}" -publicport=${SERVER_PORT} -Port="${SERVER_PORT}" -queryPort="${SERVER_QUERY_PORT}" -PublicPort=${SERVER_PORT} -RconPassword="${RCON_PASSWORD}" -RconPort=${RCON_PORT} -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS

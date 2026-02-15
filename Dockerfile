@@ -1,36 +1,38 @@
-FROM debian:bookworm-slim
+FROM cm2network/steamcmd:root
 
-ENV DEBIAN_FRONTEND=noninteractive
+LABEL maintainer="studyfranco@hotmail.fr"
 
-RUN dpkg --add-architecture i386 && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-    ca-certificates \
-    curl \
-    lib32gcc-s1 \
-    lib32stdc++6 \
-    locales \
-    && rm -rf /var/lib/apt/lists/* \
-    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+RUN set -x \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y gosu pigz --no-install-recommends\
+    && rm -rf /var/lib/apt/lists/*  \
+    && rm -rf /var/log/* \
+    && gosu nobody true
 
-ENV LANG=en_US.utf8
+RUN mkdir -p /config \
+    && chown steam:steam /config
 
-RUN useradd -m -d /home/steam -s /bin/bash steam
+COPY init.sh /
 
-USER steam
-WORKDIR /home/steam
+COPY --chown=steam:steam *.ini run.sh /home/steam/
 
-RUN mkdir -p /home/steam/steamcmd && \
-    curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf - -C /home/steam/steamcmd
+WORKDIR /config
 
-ENV PATH="/home/steam/steamcmd:${PATH}"
+ENV SERVER_NAME="VoyagersOfNeraServerByMe" \
+    SERVER_PORT=18211 \
+    SERVER_QUERY_PORT=27015 \
+    RCON_PORT=25575 \
+    RCON_PASSWORD="password" \
+    STEAMAPPID=2394010 \
+    MAXPLAYERS=32 \
+    SERVERPASSWORD="password" \
+    SERVERADMINPASSWORD="password" \
+    PUID=2198 \
+    PGID=2198 \
+    GAMEBASECONFIGDIR="/config/gamefiles/VoyagersOfNera/Saved/Config" \
+    GAMECONFIGDIR="/config/gamefiles/VoyagersOfNera/Saved/Config/LinuxServer" \
+    GAMESAVESDIR="/config/gamefiles/VoyagersOfNera/Saved/SaveGames" \
+    SKIPUPDATE="false"
 
-WORKDIR /home/steam/server
 
-COPY --chown=steam:steam init.sh /init.sh
-COPY --chown=steam:steam run.sh /run.sh
-RUN chmod +x /init.sh /run.sh
-
-EXPOSE 7777/udp
-
-ENTRYPOINT ["/run.sh"]
+ENTRYPOINT [ "/init.sh" ]

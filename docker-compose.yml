@@ -1,12 +1,37 @@
 services:
   voyagers-of-nera:
-    build: .
     container_name: voyagers-of-nera
-    restart: unless-stopped
-    ports:
-      - "7777:7777/udp"
+    hostname: voyagers-of-nera
+    image: ghcr.io/studyfranco/voyagers-of-nera:master
+    #network_mode: "host"
     volumes:
-      - ./game:/home/steam/server
+      - "/path/to/config:/config"
+    ports:
+      - 18211:18211/udp
+      - 18212:18212/udp
+      - 27015:27015/udp
+      - 27017:27017/udp
+    expose:
+      - 18211/udp
+      - 18212/udp
+      - 27015/udp
+      - 27017/udp
     environment:
-      - SERVER_PORT=7777
-      - AUTO_UPDATE=true
+      - "SERVER_NAME=VoyagersOfNeraServerByMe"
+      - "SERVER_PORT=18211"
+      - "SERVER_QUERY_PORT=27015"
+      - "RCON_PORT=25575"
+      - "RCON_PASSWORD=password"
+      - "MAXPLAYERS=32"
+      - "SERVERPASSWORD=password"
+      - "SERVERADMINPASSWORD=password"
+      - "PUID=2198"
+      - "PGID=2198"
+      - "TZ=Etc/UTC"
+    tmpfs:
+      - "/run:exec,mode=777"
+      - "/tmp:exec,mode=777"
+      - "/tmp/dumps:exec,mode=777"
+      - "/var/tmp:exec,mode=777"
+      - "/config/gamefiles/steamapps/temp:uid=2198,gid=2198"
+    restart: "unless-stopped"
