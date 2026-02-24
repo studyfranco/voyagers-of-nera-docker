@@ -1,10 +1,11 @@
 <div align="center">
   
-![Github stars](https://badgen.net/github/stars/studyfranco/voyagers-of-nera-docker?icon=github&label=stars)
-![Github forks](https://badgen.net/github/forks/studyfranco/voyagers-of-nera-docker?icon=github&label=forks)
-![Github issues](https://img.shields.io/github/issues/studyfranco/voyagers-of-nera-docker)
-![Github last-commit](https://img.shields.io/github/last-commit/studyfranco/voyagers-of-nera-docker)
-  
+[![GitHub stars](https://badgen.net/github/stars/studyfranco/voyagers-of-nera-docker?icon=github&label=stars)](https://github.com/studyfranco/voyagers-of-nera-docker/stargazers)
+[![GitHub forks](https://badgen.net/github/forks/studyfranco/voyagers-of-nera-docker?icon=github&label=forks)](https://github.com/studyfranco/voyagers-of-nera-docker/network)
+[![GitHub issues](https://badgen.net/github/issues/studyfranco/voyagers-of-nera-docker?icon=github&label=issues)](https://github.com/studyfranco/voyagers-of-nera-docker/issues)
+[![GitHub last-commit](https://badgen.net/github/last-commit/studyfranco/voyagers-of-nera-docker)](https://github.com/studyfranco/voyagers-of-nera-docker/commits/master)
+
+
 </div>
 
 # Voyagers of Nera - Docker Dedicated Server
